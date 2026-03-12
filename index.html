@@ -1587,9 +1587,25 @@ section {
   .features-grid {
     grid-template-columns: 1fr;
     gap: 1.2rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
   }
   .feature-card {
     height: 180px;
+    width: 100%;
+  }
+  .feature-card-front,
+  .feature-card-back {
+    padding: 1.2rem;
+  }
+  .feature-icon {
+    width: 60px;
+    height: 60px;
+  }
+  .feature-icon svg {
+    width: 32px;
+    height: 32px;
   }
   .presta-visual-img {
     min-height: 200px;
