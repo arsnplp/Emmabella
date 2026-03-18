@@ -2527,9 +2527,59 @@ section {
       </div>
       <div class="footer-bottom">
         <p>&copy; 2025 Emmabella — Institut de beauté à Venelles. Tous droits réservés.</p>
+        <p style="margin-top: 0.5rem;"><a href="#" id="link-mentions" style="color: rgba(255,255,255,0.6); text-decoration: underline; font-size: 0.78rem;">Mentions légales</a></p>
       </div>
     </div>
   </footer>
+
+  <!-- Mentions légales (modal) -->
+  <div id="mentions-modal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.6); overflow-y:auto; padding:2rem 1rem;">
+    <div style="max-width:700px; margin:2rem auto; background:#fff; border-radius:16px; padding:2.5rem 2rem; position:relative;">
+      <button id="close-mentions" style="position:absolute; top:1rem; right:1.2rem; background:none; border:none; font-size:1.8rem; cursor:pointer; color:#999;">&times;</button>
+      <h2 style="font-family:var(--font-heading); color:var(--color-text-dark); margin-bottom:1.5rem; font-size:1.6rem;">Mentions légales</h2>
+
+      <h3 style="color:var(--color-accent); font-size:1rem; margin:1.2rem 0 0.5rem;">1. Éditeur du site</h3>
+      <p style="font-size:0.9rem; line-height:1.7; color:var(--color-text);">
+        <strong>Emmabella — Institut de beauté</strong><br>
+        Entrepreneur individuel<br>
+        5 avenue Ribas, 13770 Venelles<br>
+        Téléphone : <a href="tel:+33622534526" style="color:var(--color-accent);">06 22 53 45 26</a><br>
+        Email : <a href="mailto:Emmanolf@gmail.com" style="color:var(--color-accent);">Emmanolf@gmail.com</a>
+      </p>
+
+      <h3 style="color:var(--color-accent); font-size:1rem; margin:1.2rem 0 0.5rem;">2. Hébergement</h3>
+      <p style="font-size:0.9rem; line-height:1.7; color:var(--color-text);">
+        Ce site est hébergé par <strong>GitHub Pages</strong><br>
+        GitHub, Inc. — 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA
+      </p>
+
+      <h3 style="color:var(--color-accent); font-size:1rem; margin:1.2rem 0 0.5rem;">3. Propriété intellectuelle</h3>
+      <p style="font-size:0.9rem; line-height:1.7; color:var(--color-text);">
+        L'ensemble des contenus présents sur ce site (textes, images, logos, graphismes) est la propriété exclusive d'Emmabella, sauf mention contraire. Toute reproduction, représentation ou diffusion, en tout ou partie, est interdite sans autorisation préalable.
+      </p>
+
+      <h3 style="color:var(--color-accent); font-size:1rem; margin:1.2rem 0 0.5rem;">4. Données personnelles</h3>
+      <p style="font-size:0.9rem; line-height:1.7; color:var(--color-text);">
+        Ce site ne collecte aucune donnée personnelle via des formulaires ou des cookies de suivi. Aucun outil d'analyse ou de tracking n'est utilisé. Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification et de suppression de vos données en contactant l'éditeur.
+      </p>
+
+      <h3 style="color:var(--color-accent); font-size:1rem; margin:1.2rem 0 0.5rem;">5. Cookies</h3>
+      <p style="font-size:0.9rem; line-height:1.7; color:var(--color-text);">
+        Ce site n'utilise aucun cookie publicitaire ni cookie de suivi. Seuls des cookies techniques strictement nécessaires au fonctionnement du site peuvent être utilisés.
+      </p>
+
+      <h3 style="color:var(--color-accent); font-size:1rem; margin:1.2rem 0 0.5rem;">6. Responsabilité</h3>
+      <p style="font-size:0.9rem; line-height:1.7; color:var(--color-text);">
+        L'éditeur s'efforce de fournir des informations aussi précises que possible. Toutefois, il ne pourra être tenu responsable des omissions, inexactitudes ou des résultats obtenus suite à l'utilisation de ces informations.
+      </p>
+
+      <h3 style="color:var(--color-accent); font-size:1rem; margin:1.2rem 0 0.5rem;">7. Crédits</h3>
+      <p style="font-size:0.9rem; line-height:1.7; color:var(--color-text);">
+        Conception et développement du site : Arsène Le Coq<br>
+        Photographies : Emmabella / Unsplash
+      </p>
+    </div>
+  </div>
 
   <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -2706,6 +2756,19 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('blog-list').style.display = 'block';
     window.scrollTo(0, 0);
   };
+
+  // Mentions légales modal
+  const mentionsModal = document.getElementById('mentions-modal');
+  document.getElementById('link-mentions').addEventListener('click', (e) => {
+    e.preventDefault();
+    mentionsModal.style.display = 'block';
+  });
+  document.getElementById('close-mentions').addEventListener('click', () => {
+    mentionsModal.style.display = 'none';
+  });
+  mentionsModal.addEventListener('click', (e) => {
+    if (e.target === mentionsModal) mentionsModal.style.display = 'none';
+  });
 });
   </script>
 
