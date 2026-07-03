@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /emmabella-update.tar.gz
+Disallow: /blog/Ma déclaration d'activité.pdf
+Disallow: /scripts/
 
-Sitemap: https://www.emmabella.fr/sitemap.xml
+Sitemap: https://emmabella.fr/sitemap.xml
