@@ -94,15 +94,14 @@ Fichier livré à la racine du repo, **non déployé** (pas d'accès SSH product
 
 **À faire côté serveur :** fusionner les blocs de ce fichier dans la config nginx existante, `nginx -t` pour valider la syntaxe, puis `systemctl reload nginx`. Commandes de vérification post-déploiement incluses en tête du fichier.
 
-## 5. Action manuelle restante n°2 : valider `SEO_META_PROPOSAL.md`
+## 5. `SEO_META_PROPOSAL.md` — validé et appliqué
 
-15 pages (blog/index + 14 articles) ont une proposition de title/description raccourcie en attente — **rien n'a été appliqué**. Une fois validé (en tout ou en partie), j'applique les changements dans un commit dédié.
+Les 15 propositions ont été validées et appliquées (commit `fe80791`) : title, meta description, `og:title`/`og:description`, `twitter:title`/`twitter:description` et le `headline`/`name` + `description` JSON-LD des 15 pages. Titles ramenés de 77-115 caractères à 35-52. Descriptions ramenées de 149-175 caractères à 125-138. Aucun texte visible des articles modifié — diff confiné au `<head>` de chaque page (~16 lignes par fichier).
 
 ## 6. Hors périmètre de cette passe (signalé, non traité)
 
 - **Accessibilité (89/100 inchangé) :** contraste insuffisant par endroits et cibles tactiles trop petites/rapprochées sur mobile, déjà relevés dans l'audit initial — pas dans le périmètre de ce brief SEO.
-- **Push vers `origin/main` :** aucun commit n'a été poussé. À confirmer explicitement.
-- **Domaine non-www vs www :** le code est prêt (tous les `canonical`/OG/JSON-LD/sitemap pointent vers `emmabella.fr`), mais tant que `nginx.seo.conf` n'est pas déployé, les deux domaines continueront de répondre 200 sans redirection en production.
+- **Domaine non-www vs www :** le code est prêt (tous les `canonical`/OG/JSON-LD/sitemap pointent vers `emmabella.fr`), mais tant que `nginx.seo.conf` n'est pas déployé, les deux domaines continueront de répondre 200 sans redirection en production — seule action manuelle restante (§4).
 
 ---
 

@@ -1,6 +1,6 @@
 # Proposition de titles & meta descriptions — pages non restructurées
 
-**Ne rien appliquer avant validation.** Ce document couvre les 15 pages qui n'ont **pas** été réécrites dans le cadre de la refonte (leur contenu et leurs titres/descriptions actuels sont donc restés inchangés jusqu'ici) : `blog/index.html` + les 14 articles.
+**✅ Validé et appliqué le 03/07/2026** (commit `fe80791`) — les 15 pages ci-dessous ont désormais le title/description "proposé" en production dans le code (title, meta description, og:title/description, twitter:title/description, JSON-LD headline/name + description). Ce document fait foi de ce qui a été demandé et appliqué. Ce document couvre les 15 pages qui n'ont **pas** été réécrites dans le cadre de la refonte (seul leur `<head>` a changé, aucun texte visible touché) : `blog/index.html` + les 14 articles.
 
 `index.html` et les 5 nouvelles pages (`prestations.html`, `a-propos.html`, `entreprises.html`, `evenements.html`, `reserver.html`) n'apparaissent pas ici : elles ont été entièrement recréées dans le cadre de la refonte et ont déjà reçu un title/description conforme (≤60 / 140-155 caractères) dès leur création — il n'y avait pas de version "actuelle" à préserver pour ces pages-là.
 
