@@ -5,12 +5,14 @@
 // la file d'attente. Zéro dépendance npm (Node >= 18 natif).
 //
 // Le contenu est rédigé en invoquant le CLI `claude` en mode headless (`claude -p`),
-// authentifié via CLAUDE_CODE_OAUTH_TOKEN (abonnement Pro/Max, généré une fois avec
-// `claude setup-token`) — pas besoin de clé API facturée à l'usage. ANTHROPIC_API_KEY
-// reste supporté en repli si tu préfères une clé API classique.
+// authentifié via ANTHROPIC_API_KEY (clé API classique, console.anthropic.com).
+// CLAUDE_CODE_OAUTH_TOKEN (abonnement Pro/Max, généré avec `claude setup-token`) est
+// aussi supporté si l'organisation autorise l'accès par abonnement pour Claude Code —
+// sinon le CLI y bascule automatiquement en cas d'échec silencieux, d'où la clé API en
+// principal ici.
 //
 // Usage :
-//   CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat01-... node scripts/generate-blog-post.mjs
+//   ANTHROPIC_API_KEY=sk-ant-... node scripts/generate-blog-post.mjs
 //   DRY_RUN=1 node scripts/generate-blog-post.mjs   (pas d'appel Claude, contenu factice, pour tester le gabarit)
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdtempSync, rmSync } from 'node:fs';

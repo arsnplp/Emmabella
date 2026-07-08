@@ -32,7 +32,7 @@ jobs:
 
       - name: Générer le nouvel article
         env:
-          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node scripts/generate-blog-post.mjs
 
       - name: Valider le JSON-LD
