@@ -4,14 +4,13 @@
 // existants. Met à jour blog/index.html et sitemap.xml, puis retire le sujet traité de
 // la file d'attente. Zéro dépendance npm (Node >= 18 natif).
 //
-// Le contenu est rédigé en invoquant le CLI `claude` en mode headless (`claude -p`),
-// authentifié via ANTHROPIC_API_KEY (clé API classique, console.anthropic.com).
-// CLAUDE_CODE_OAUTH_TOKEN (abonnement Pro/Max, généré avec `claude setup-token`) est
-// aussi supporté si l'organisation autorise l'accès par abonnement pour Claude Code —
-// sinon le CLI y bascule automatiquement en cas d'échec silencieux, d'où la clé API en
-// principal ici.
+// Le contenu est rédigé en invoquant le CLI `claude` en mode headless (`claude -p`).
+// Accepte CLAUDE_CODE_OAUTH_TOKEN (abonnement Pro/Max, généré avec `claude setup-token`)
+// ou ANTHROPIC_API_KEY (clé API classique, console.anthropic.com) — le CLI utilise
+// celui des deux qui est présent dans l'environnement.
 //
 // Usage :
+//   CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat01-... node scripts/generate-blog-post.mjs
 //   ANTHROPIC_API_KEY=sk-ant-... node scripts/generate-blog-post.mjs
 //   DRY_RUN=1 node scripts/generate-blog-post.mjs   (pas d'appel Claude, contenu factice, pour tester le gabarit)
 
@@ -190,7 +189,7 @@ function runClaudeHeadless(prompt) {
   try {
     return execFileSync(
       'claude',
-      ['-p', prompt, '--model', MODEL, '--max-turns', '1', '--allowedTools', ''],
+      ['-p', prompt, '--model', MODEL, '--max-turns', '1'],
       {
         cwd: scratch,
         env: process.env,
@@ -199,7 +198,8 @@ function runClaudeHeadless(prompt) {
       }
     );
   } catch (err) {
-    throw new Error(`Appel du CLI \`claude\` échoué : ${err.stderr || err.message}`);
+    const detail = [err.stderr, err.stdout].filter(Boolean).join('\n') || err.message;
+    throw new Error(`Appel du CLI \`claude\` échoué : ${detail}`);
   } finally {
     rmSync(scratch, { recursive: true, force: true });
   }
