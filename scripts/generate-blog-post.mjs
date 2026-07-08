@@ -189,7 +189,7 @@ function runClaudeHeadless(prompt) {
   try {
     return execFileSync(
       'claude',
-      ['-p', prompt, '--model', MODEL, '--max-turns', '1'],
+      ['-p', prompt, '--model', MODEL, '--max-turns', '5'],
       {
         cwd: scratch,
         env: process.env,
