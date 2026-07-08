@@ -1,0 +1,49 @@
+name: Article de blog hebdomadaire
+
+on:
+  schedule:
+    # Tous les lundis à 06:00 UTC (~08:00 en France l'été, 07:00 l'hiver).
+    - cron: '0 6 * * 1'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-blog
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Générer le nouvel article
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/generate-blog-post.mjs
+
+      - name: Valider le JSON-LD
+        run: node scripts/validate-jsonld.mjs
+
+      - name: Commit et push
+        run: |
+          git config user.name "emmabella-blog-bot"
+          git config user.email "actions@users.noreply.github.com"
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "Rien à publier (file d'attente vide ou article déjà présent)."
+            exit 0
+          fi
+          git add blog/ sitemap.xml scripts/blog-topics.json
+          SLUG=$(git diff --cached --name-only -- blog/ | grep -v '^blog/index.html$' | head -n1)
+          git commit -m "content: article de blog hebdomadaire — ${SLUG:-mise à jour}"
+          git push origin HEAD:main
