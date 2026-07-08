@@ -1,23 +1,30 @@
 #!/usr/bin/env node
 // Génère un nouvel article de blog SEO (prestation + mot-clé + Venelles) à partir de
-// scripts/blog-topics.json, rédigé par l'API Claude, dans le gabarit exact des articles
+// scripts/blog-topics.json, rédigé par Claude, dans le gabarit exact des articles
 // existants. Met à jour blog/index.html et sitemap.xml, puis retire le sujet traité de
-// la file d'attente. Zéro dépendance (Node >= 18 natif : fetch).
+// la file d'attente. Zéro dépendance npm (Node >= 18 natif).
+//
+// Le contenu est rédigé en invoquant le CLI `claude` en mode headless (`claude -p`),
+// authentifié via CLAUDE_CODE_OAUTH_TOKEN (abonnement Pro/Max, généré une fois avec
+// `claude setup-token`) — pas besoin de clé API facturée à l'usage. ANTHROPIC_API_KEY
+// reste supporté en repli si tu préfères une clé API classique.
 //
 // Usage :
-//   ANTHROPIC_API_KEY=sk-ant-... node scripts/generate-blog-post.mjs
-//   DRY_RUN=1 node scripts/generate-blog-post.mjs   (pas d'appel API, contenu factice, pour tester le gabarit)
+//   CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat01-... node scripts/generate-blog-post.mjs
+//   DRY_RUN=1 node scripts/generate-blog-post.mjs   (pas d'appel Claude, contenu factice, pour tester le gabarit)
 
-import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const BLOG_DIR = join(ROOT, 'blog');
 const IMAGES_DIR = join(ROOT, 'images');
 const TOPICS_FILE = join(ROOT, 'scripts', 'blog-topics.json');
 const SITE_URL = 'https://emmabella.fr';
-const MODEL = 'claude-sonnet-5';
+const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-5';
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
@@ -126,9 +133,10 @@ async function generateContent(topic, existingArticles) {
     };
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY manquant (ajoute-le comme secret GitHub Actions).');
+  if (!process.env.CLAUDE_CODE_OAUTH_TOKEN && !process.env.ANTHROPIC_API_KEY) {
+    throw new Error(
+      "Aucune authentification trouvée. Ajoute CLAUDE_CODE_OAUTH_TOKEN (généré avec `claude setup-token`, abonnement Pro/Max) ou ANTHROPIC_API_KEY comme secret GitHub Actions."
+    );
   }
 
   const relatedTitles = existingArticles.slice(0, 6).map((a) => `- ${a.h1}`).join('\n');
@@ -165,31 +173,34 @@ Réponds UNIQUEMENT avec un objet JSON valide (aucun texte avant/après, aucun b
   "infoBoxText": "string"
 }`;
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 4096,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  });
-
-  if (!res.ok) {
-    throw new Error(`Appel API Claude échoué (${res.status}): ${await res.text()}`);
-  }
-
-  const data = await res.json();
-  const text = data.content?.[0]?.text ?? '';
+  const text = runClaudeHeadless(prompt);
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
-    throw new Error(`Réponse de l'API sans JSON exploitable :\n${text}`);
+    throw new Error(`Réponse de Claude sans JSON exploitable :\n${text}`);
   }
   return JSON.parse(jsonMatch[0]);
+}
+
+// Invoque le CLI `claude` en mode headless, dans un dossier vide isolé (pas d'accès
+// au dépôt, pas d'outils), pour obtenir une simple réponse texte au prompt donné.
+function runClaudeHeadless(prompt) {
+  const scratch = mkdtempSync(join(tmpdir(), 'emmabella-blog-'));
+  try {
+    return execFileSync(
+      'claude',
+      ['-p', prompt, '--model', MODEL, '--max-turns', '1', '--allowedTools', ''],
+      {
+        cwd: scratch,
+        env: process.env,
+        encoding: 'utf-8',
+        maxBuffer: 10 * 1024 * 1024,
+      }
+    );
+  } catch (err) {
+    throw new Error(`Appel du CLI \`claude\` échoué : ${err.stderr || err.message}`);
+  } finally {
+    rmSync(scratch, { recursive: true, force: true });
+  }
 }
 
 // ── Assemblage du HTML de l'article ────────────────────────────────────────
