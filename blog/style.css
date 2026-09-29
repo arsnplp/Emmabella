@@ -491,3 +491,7 @@ p { margin-bottom: 1rem; }
   .burger.active span:nth-child(2) { opacity: 0; }
   .burger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
 }
+
+/* Blog sans images : vignettes texte avec liseré */
+.blog-card, .related-card { border-top: 4px solid var(--color-accent); }
+.blog-card-body { padding-top: 1.75rem; }

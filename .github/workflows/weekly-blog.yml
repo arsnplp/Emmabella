@@ -1,9 +1,9 @@
 name: Article de blog hebdomadaire
 
 on:
-  schedule:
-    # Tous les lundis à 06:00 UTC (~08:00 en France l'été, 07:00 l'hiver).
-    - cron: '0 6 * * 1'
+  # Planification désactivée le 30/09/2026 : la publication hebdomadaire est
+  # désormais faite par une routine Claude (lundi matin, sans images, e-mail de
+  # compte-rendu). Ce workflow reste lançable à la main en secours.
   workflow_dispatch: {}
 
 permissions:
