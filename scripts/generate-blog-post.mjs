@@ -156,10 +156,12 @@ Contraintes SEO :
 - pageTitle : environ 55-60 caractères, au format "<Titre court> à Venelles | Emmabella".
 - h1 : accrocheur, contient le mot-clé, peut être une question ou une affirmation.
 - intro : 2-3 phrases qui posent le sujet et mentionnent Venelles / Emma / Emmabella.
-- 3 à 4 sections (h2) qui structurent l'article (ex : présentation, déroulé, bénéfices, conseils, pour qui...), chacune avec 1 à 2 paragraphes de 2-4 phrases.
+- Sections (h2) qui structurent l'article (ex : présentation, déroulé, bénéfices, conseils, pour qui, questions fréquentes...), paragraphes de 2-4 phrases.
 - Un encadré "À savoir" (calloutTitle/calloutText) : une info pratique concrète (fréquence, durée, précaution...).
 - infoBoxText : une phrase invitant à prendre rendez-vous chez Emmabella à Venelles pour cette prestation.
 - Tu peux utiliser des balises <strong> pour mettre en valeur des termes clés dans les paragraphes, aucune autre balise HTML.
+- SEO local : cite naturellement Venelles et, quand c'est pertinent, Aix-en-Provence et une ou deux communes voisines (Puyricard, Rognes, Meyrargues, Éguilles, Saint-Cannat...). Si le mot-clé contient une ville, reprends-la dans le H1 et le pageTitle.
+- Vise 700 à 1000 mots au total : 4 à 5 sections (h2), chacune avec 2 à 3 paragraphes.
 - N'invente aucun tarif, durée exacte ou allégation médicale/thérapeutique non vérifiable.
 
 Réponds UNIQUEMENT avec un objet JSON valide (aucun texte avant/après, aucun bloc markdown), au format exact :
@@ -510,25 +512,107 @@ function insertIntoSitemap(topic, dateStr) {
   writeFileSync(sitemapPath, xml);
 }
 
+// ── Réalimentation automatique de la file (elle ne doit JAMAIS être vide) ──
+
+const MIN_QUEUE = 4;
+const REFILL_COUNT = 6;
+
+function availableImages() {
+  return [...new Set(
+    readdirSync(IMAGES_DIR)
+      .filter((f) => /\.(avif|webp|jpe?g|png)$/i.test(f))
+      .map((f) => f.replace(/\.(avif|webp|jpe?g|png)$/i, ''))
+  )].sort();
+}
+
+function slugify(str = '') {
+  return String(str)
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+async function refillQueue(queue, articles) {
+  if (queue.length >= MIN_QUEUE) return queue;
+  if (process.env.DRY_RUN) return queue;
+  console.log(`File d'attente basse (${queue.length} sujet(s)) : génération de ${REFILL_COUNT} nouveaux sujets SEO local.`);
+
+  const images = availableImages();
+  const published = articles.map((a) => `- ${a.slug} | ${a.h1} | tag: ${a.tag}`).join('\n');
+  const queued = queue.map((t) => `- ${t.slug} | ${t.keyword}`).join('\n') || '(aucun)';
+
+  const prompt = `Tu es responsable SEO local d'Emmabella, institut de beauté à Venelles (13770), près d'Aix-en-Provence, tenu par Emma.
+Prestations RÉELLES (n'en invente aucune autre) :
+- Extensions de cils : cil à cil, volume 2D, volume russe 3D-4D, mega volume, remplissage, dépose
+- Rehaussement de cils
+- Sourcils : restructuration (épilation + teinture), Brow Lift
+- Soins visage : Hydraskin, lifting naturel Kobido
+- Massages & corps : massage balinais, madérothérapie, réflexologie plantaire, massage Amma assis (aussi en entreprise), massages ciblés
+- Cartes cadeaux, événements (EVJF, mariage, baby shower), offres entreprises
+Zone locale : Venelles, Aix-en-Provence, Puyricard, Rognes, Meyrargues, Peyrolles-en-Provence, Saint-Cannat, Éguilles, Le Puy-Sainte-Réparade, Pertuis, Simiane-Collongue, Gardanne.
+
+Articles DÉJÀ publiés (ne jamais viser le même mot-clé ni le même angle) :
+${published}
+
+Sujets déjà en file d'attente :
+${queued}
+
+Propose exactement ${REFILL_COUNT} NOUVEAUX sujets d'articles de blog, optimisés SEO et SEO LOCAL, chacun visant UNE intention de recherche précise et un mot-clé distinct de tout l'existant. Varie les types : questions que se posent les clientes avant de réserver (combien de temps ça tient, entretien, contre-indications, préparation, fréquence, comparatifs entre deux techniques), saisonnalité (mois en cours et suivants), occasions (fêtes, cadeaux, mariage), et au moins 2 sujets ciblant une ville voisine de Venelles ou Aix-en-Provence dans le mot-clé (ex. "... près d'Aix-en-Provence", "... Puyricard"). Répartis sur plusieurs familles de prestations. Aucun tarif, aucune allégation médicale.
+
+Pour "image", choisis UNIQUEMENT une valeur exacte de cette liste (la plus cohérente avec le sujet) : ${images.join(', ')}
+
+Réponds UNIQUEMENT avec un tableau JSON valide, sans texte autour, au format :
+[{"slug":"mots-cles-en-minuscules-avec-tirets","service":"Sujet précis de l'article","tag":"Catégorie courte (ex. Extensions de cils, Sourcils, Soins visage, Massages bien-être, Bien-être, Idées cadeaux)","keyword":"mot-clé principal","image":"valeur de la liste","imageAlt":"texte alternatif descriptif avec la ville"}]`;
+
+  let proposals = [];
+  try {
+    const text = runClaudeHeadless(prompt);
+    const m = text.match(/\[[\s\S]*\]/);
+    proposals = m ? JSON.parse(m[0]) : [];
+  } catch (err) {
+    console.error(`Réalimentation échouée : ${err.message}`);
+    return queue;
+  }
+
+  const takenSlugs = new Set([...articles.map((a) => a.slug), ...queue.map((t) => t.slug)]);
+  const takenKw = new Set(queue.map((t) => (t.keyword || '').toLowerCase()));
+  const fresh = [];
+  for (const t of proposals) {
+    if (!t || !t.service || !t.keyword || !t.tag) continue;
+    const slug = slugify(t.slug || t.keyword);
+    if (!slug || takenSlugs.has(slug) || takenKw.has(t.keyword.toLowerCase())) continue;
+    if (existsSync(join(BLOG_DIR, `${slug}.html`))) continue;
+    const image = images.includes(t.image) ? t.image : 'blog1';
+    fresh.push({ slug, service: t.service, tag: t.tag, keyword: t.keyword, image, imageAlt: t.imageAlt || t.service });
+    takenSlugs.add(slug);
+    takenKw.add(t.keyword.toLowerCase());
+  }
+  const next = [...queue, ...fresh];
+  saveQueue(next);
+  console.log(`${fresh.length} nouveau(x) sujet(s) ajouté(s) à scripts/blog-topics.json.`);
+  return next;
+}
+
 // ── Programme principal ─────────────────────────────────────────────────
 
 async function main() {
-  const queue = loadQueue();
+  const articles = readPublishedArticles();
+  let queue = loadQueue();
+
+  // Retire les sujets dont l'article existe déjà.
+  const before = queue.length;
+  queue = queue.filter((t) => !existsSync(join(BLOG_DIR, `${t.slug}.html`)));
+  if (queue.length !== before) saveQueue(queue);
+
+  queue = await refillQueue(queue, articles);
   if (queue.length === 0) {
-    console.log('File d’attente vide (scripts/blog-topics.json) — aucun article à publier cette semaine. Ajoute de nouveaux sujets pour continuer les publications hebdomadaires.');
-    return;
+    // Échec volontaire : l'exécution GitHub Actions passe en rouge et GitHub envoie une alerte e-mail.
+    throw new Error('File d’attente vide et réalimentation automatique impossible : aucun article publié cette semaine.');
   }
 
   const topic = queue[0];
   const targetPath = join(BLOG_DIR, `${topic.slug}.html`);
-  if (existsSync(targetPath)) {
-    console.log(`blog/${topic.slug}.html existe déjà — sujet retiré de la file sans republier.`);
-    saveQueue(queue.slice(1));
-    return;
-  }
 
   console.log(`Sujet retenu : ${topic.service} (${topic.slug})`);
-  const articles = readPublishedArticles();
   const content = await generateContent(topic, articles);
   const related = pickRelated(articles, topic.tag, 3);
   const dateStr = todayISO();

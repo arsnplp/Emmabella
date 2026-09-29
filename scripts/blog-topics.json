@@ -1,1 +1,66 @@
-[]
+[
+  {
+    "slug": "combien-de-temps-tiennent-extensions-cils",
+    "service": "Combien de temps tiennent des extensions de cils (et comment les faire durer)",
+    "tag": "Extensions de cils",
+    "keyword": "combien de temps tiennent les extensions de cils",
+    "image": "cils",
+    "imageAlt": "Extensions de cils posées à l'institut Emmabella à Venelles"
+  },
+  {
+    "slug": "cil-a-cil-ou-volume-russe-choisir",
+    "service": "Cil à cil, volume 2D ou volume russe : quelle pose choisir",
+    "tag": "Extensions de cils",
+    "keyword": "cil à cil ou volume russe près d'Aix-en-Provence",
+    "image": "exention-de-cils-blog",
+    "imageAlt": "Comparatif pose cil à cil et volume russe près d'Aix-en-Provence"
+  },
+  {
+    "slug": "soin-kobido-lifting-naturel-aix-en-provence",
+    "service": "Kobido, le lifting naturel japonais : déroulé et bienfaits",
+    "tag": "Soins visage",
+    "keyword": "Kobido Aix-en-Provence",
+    "image": "massage-visage-blog",
+    "imageAlt": "Soin Kobido lifting naturel près d'Aix-en-Provence"
+  },
+  {
+    "slug": "soin-hydraskin-peau-deshydratee-automne",
+    "service": "Soin Hydraskin : réhydrater sa peau à l'automne",
+    "tag": "Soins visage",
+    "keyword": "soin hydratant visage automne Venelles",
+    "image": "soins-visage",
+    "imageAlt": "Soin visage Hydraskin à Venelles"
+  },
+  {
+    "slug": "massage-balinais-puyricard-venelles",
+    "service": "Massage balinais : ce qui le distingue des autres massages",
+    "tag": "Massages bien-être",
+    "keyword": "massage balinais Puyricard",
+    "image": "massagecorpblog",
+    "imageAlt": "Massage balinais à l'institut Emmabella, près de Puyricard"
+  },
+  {
+    "slug": "idees-cadeaux-noel-institut-beaute-aix",
+    "service": "Idées cadeaux beauté pour Noël : offrir un soin en institut",
+    "tag": "Idées cadeaux",
+    "keyword": "idée cadeau Noël soin beauté Aix-en-Provence",
+    "image": "a2",
+    "imageAlt": "Idée cadeau de Noël : un soin chez Emmabella près d'Aix-en-Provence"
+  },
+  {
+    "slug": "brow-lift-ou-restructuration-sourcils",
+    "service": "Brow Lift ou restructuration des sourcils : lequel choisir",
+    "tag": "Sourcils",
+    "keyword": "brow lift ou restructuration sourcils",
+    "image": "browliftBlog",
+    "imageAlt": "Brow Lift et restructuration des sourcils à Venelles"
+  },
+  {
+    "slug": "maderotherapie-avant-apres-seances",
+    "service": "Madérothérapie : combien de séances et à quel rythme",
+    "tag": "Bien-être",
+    "keyword": "combien de séances madérothérapie Rognes",
+    "image": "cure-maderotherapie-blog",
+    "imageAlt": "Séance de madérothérapie à Venelles, près de Rognes"
+  }
+]
