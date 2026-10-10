@@ -1,0 +1,55 @@
+name: Déploiement sur le VPS
+
+# À chaque push sur main (changement d'adresse, article de la routine...),
+# se connecte en SSH au VPS et exécute le script de déploiement
+# (scripts/deploy-vps.sh installé sur le serveur), qui fait un
+# `git reset --hard origin/main` dans le dossier servi par nginx.
+#
+# Secrets GitHub à créer (Settings > Secrets and variables > Actions) :
+#   VPS_HOST         ip ou nom de domaine du VPS
+#   VPS_USER         utilisateur SSH (ex : ubuntu, root, deploy)
+#   VPS_SSH_KEY      clé privée SSH (ed25519) dont la clé publique est dans
+#                    ~/.ssh/authorized_keys de cet utilisateur sur le VPS
+#   VPS_DEPLOY_CMD   (optionnel) commande à lancer, par défaut
+#                    /usr/local/bin/emmabella-deploy.sh
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-vps
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Déployer via SSH
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_DEPLOY_CMD: ${{ secrets.VPS_DEPLOY_CMD }}
+        run: |
+          if [ -z "$VPS_HOST" ] || [ -z "$VPS_USER" ] || [ -z "$VPS_SSH_KEY" ]; then
+            echo "::error::Secrets VPS_HOST, VPS_USER et VPS_SSH_KEY manquants : voir l'en-tête de ce workflow."
+            exit 1
+          fi
+          mkdir -p ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes "$VPS_USER@$VPS_HOST" \
+            "${VPS_DEPLOY_CMD:-/usr/local/bin/emmabella-deploy.sh}"
+
+      - name: Vérifier que la nouvelle version est en ligne
+        run: |
+          sleep 5
+          LOCAL=$(curl -s "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/main/index.html" | md5sum | cut -d' ' -f1)
+          LIVE=$(curl -s https://emmabella.fr/index.html | md5sum | cut -d' ' -f1)
+          echo "GitHub : $LOCAL / En ligne : $LIVE"
+          if [ "$LOCAL" != "$LIVE" ]; then
+            echo "::warning::index.html en ligne diffère de main (cache ou déploiement incomplet)."
+          fi
