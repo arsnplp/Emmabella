@@ -13,6 +13,7 @@
 //   CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat01-... node scripts/generate-blog-post.mjs
 //   ANTHROPIC_API_KEY=sk-ant-... node scripts/generate-blog-post.mjs
 //   DRY_RUN=1 node scripts/generate-blog-post.mjs   (pas d'appel Claude, contenu factice, pour tester le gabarit)
+//   CONTENT_FILE=/chemin/contenu.json node scripts/generate-blog-post.mjs   (contenu JSON déjà rédigé, ex. par la routine Claude ; pas d'appel CLI)
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -134,6 +135,16 @@ async function generateContent(topic, existingArticles) {
     };
   }
 
+  // Mode routine Claude : le contenu (même JSON que ci-dessous) est fourni dans un
+  // fichier, aucun appel au CLI `claude` n'est fait.
+  if (process.env.CONTENT_FILE) {
+    const content = JSON.parse(readFileSync(process.env.CONTENT_FILE, 'utf-8'));
+    for (const key of ['pageTitle', 'metaDescription', 'h1', 'intro', 'sections', 'calloutTitle', 'calloutText', 'infoBoxText']) {
+      if (!content[key]) throw new Error(`CONTENT_FILE : champ "${key}" manquant.`);
+    }
+    return content;
+  }
+
   if (!process.env.CLAUDE_CODE_OAUTH_TOKEN && !process.env.ANTHROPIC_API_KEY) {
     throw new Error(
       "Aucune authentification trouvée. Ajoute CLAUDE_CODE_OAUTH_TOKEN (généré avec `claude setup-token`, abonnement Pro/Max) ou ANTHROPIC_API_KEY comme secret GitHub Actions."
@@ -227,9 +238,7 @@ function buildArticleHtml(topic, content, related, dateStr) {
 
   const relatedHtml = related
     .map((a) => {
-      const alt = escapeAttr(a.h1);
       return `          <a href="${a.slug}.html" class="related-card">
-            ${pictureTag(a.imageBase || 'blog1', alt, 'loading="lazy"')}
             <div class="related-card-body">
               <span class="related-card-tag">Lire l'article</span>
               <h3>${a.h1}</h3>
@@ -465,13 +474,9 @@ function insertIntoBlogIndex(topic, content) {
   let html = readFileSync(indexPath, 'utf-8');
 
   const excerpt = sanitizeInline(content.intro).replace(/<[^>]+>/g, '').slice(0, 160);
-  const alt = escapeAttr(topic.imageAlt);
 
   const cardHtml = `          <!-- Article généré automatiquement -->
           <a href="${topic.slug}.html" class="blog-card">
-            <div class="blog-card-img">
-              ${pictureTag(topic.image, alt, 'loading="lazy"')}
-            </div>
             <div class="blog-card-body">
               <span class="blog-card-tag">${escapeAttr(topic.tag)}</span>
               <h3>${sanitizeInline(content.h1)}</h3>
@@ -533,7 +538,7 @@ function slugify(str = '') {
 
 async function refillQueue(queue, articles) {
   if (queue.length >= MIN_QUEUE) return queue;
-  if (process.env.DRY_RUN) return queue;
+  if (process.env.DRY_RUN || process.env.CONTENT_FILE) return queue;
   console.log(`File d'attente basse (${queue.length} sujet(s)) : génération de ${REFILL_COUNT} nouveaux sujets SEO local.`);
 
   const images = availableImages();
