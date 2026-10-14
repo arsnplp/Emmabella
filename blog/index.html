@@ -22,9 +22,7 @@
   <meta name="twitter:description" content="Conseils beauté, madérothérapie et bien-être par Emmabella : extensions de cils, soins visage, massages, réflexologie. Lisez nos articles.">
   <meta name="twitter:image" content="https://emmabella.fr/images/blog1.png">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='80' font-family='serif' fill='%23e8719e'>E</text></svg>">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:wght@300;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/fonts.css">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -61,8 +59,8 @@
   --color-text: #3b3b3b;
   --color-text-light: #4f4f4f;
   --color-text-dark: #1a1a1a;
-  --color-accent: #e8719e;
-  --color-accent-hover: #d45c87;
+  --color-accent: #c23c70; /* #e8719e assombri pour le contraste WCAG AA */
+  --color-accent-hover: #a8325f;
   --color-rose: #f0a0bf;
   --color-rose-light: #fff1f7;
   --color-cream: #fff7fa;
@@ -153,7 +151,7 @@ p { margin-bottom: 1rem; }
   font-weight: 400;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.9);
+  color: var(--color-white);
   position: relative;
   transition: color var(--transition);
   white-space: nowrap;
@@ -175,13 +173,13 @@ p { margin-bottom: 1rem; }
   font-family: 'Lato', 'Helvetica Neue', sans-serif;
   font-size: 0.75rem;
   font-weight: 700;
-  background: rgba(255,255,255,0.18) !important;
+  background: rgba(255,255,255,0.06) !important;
   border: 1.5px solid rgba(255,255,255,0.85) !important;
   color: var(--color-white) !important;
   letter-spacing: 0.08em;
 }
 .nav-cta .btn:hover {
-  background: rgba(255,255,255,0.35) !important;
+  background: rgba(0,0,0,0.12) !important;
   transform: translateY(-1px);
 }
 
@@ -345,6 +343,9 @@ p { margin-bottom: 1rem; }
 .footer-social a:hover { background: var(--color-accent); border-color: var(--color-accent); }
 .footer-social svg { width: 18px; height: 18px; fill: rgba(255,255,255,0.8); }
 .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; text-align: center; font-size: 0.82rem; }
+.footer-legal { margin-top: 0.5rem; font-size: 0.8rem; }
+.footer-legal a { color: rgba(255,255,255,0.75); text-decoration: underline; }
+.footer-legal a:hover { color: #fff; }
 
 /* ── Responsive mobile ── */
 @media (max-width: 768px) {
@@ -692,6 +693,7 @@ p { margin-bottom: 1rem; }
       </div>
       <div class="footer-bottom">
         <p>&copy; 2025 Emmabella — Institut de beauté à Venelles. Tous droits réservés.</p>
+        <p class="footer-legal"><a href="../mentions-legales.html">Mentions légales</a> · <a href="../confidentialite.html">Confidentialité</a> · <a href="../cgu.html">CGU</a> · <a href="../cgv.html">CGV</a></p>
         <p style="margin-top:0.75rem; font-size:0.85rem; color:rgba(255,255,255,0.75);">Site réalisé par <a href="https://acco-lab.fr/" target="_blank" rel="noopener" style="color:#fff; font-weight:600; text-decoration:underline; letter-spacing:0.05em;">ACCO LAB</a></p>
       </div>
     </div>

@@ -116,3 +116,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// ── Carte Google Maps chargée au clic (aucun cookie tiers avant action) ──
+document.querySelectorAll('[data-map-embed]').forEach((box) => {
+  const btn = box.querySelector('[data-map-load]');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const f = document.createElement('iframe');
+    f.src = box.dataset.src;
+    f.title = box.dataset.title || 'Carte';
+    f.loading = 'lazy';
+    f.setAttribute('allowfullscreen', '');
+    f.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+    box.replaceWith(f);
+  });
+});
