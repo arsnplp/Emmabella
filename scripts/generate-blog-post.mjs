@@ -269,7 +269,13 @@ function buildArticleHtml(topic, content, related, dateStr) {
   <meta name="twitter:title" content="${escapeAttr(pageTitle)}">
   <meta name="twitter:description" content="${escapeAttr(metaDescription)}">
   <meta name="twitter:image" content="${ogImageUrl}">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='80' font-family='serif' fill='%23e8719e'>E</text></svg>">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/assets/favicon/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/favicon/favicon-32x32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="/assets/favicon/favicon-16x16.png" sizes="16x16" type="image/png">
+  <link rel="apple-touch-icon" href="/assets/favicon/apple-touch-icon.png" sizes="180x180">
+  <link rel="manifest" href="/assets/favicon/site.webmanifest">
+  <meta name="theme-color" content="#e8719e">
   <link rel="stylesheet" href="../assets/fonts.css">
   <link rel="stylesheet" href="style.css">
   <script type="application/ld+json">
