@@ -450,3 +450,8 @@ p { margin-bottom: 1rem; }
 .cookie-banner .btn-primary:hover { filter: brightness(1.1); }
 .btn-outline-light { background: transparent; border: 1.5px solid rgba(255,255,255,0.4); color: #fff; }
 .btn-outline-light:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+
+.map-fallback .btn { display: inline-block; padding: 0.7rem 1.4rem; font-size: 0.8rem; font-family: inherit; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 50px; cursor: pointer; border: 1.5px solid var(--color-accent); background: var(--color-accent); color: #fff; transition: all .25s ease; }
+.map-fallback .btn:hover { filter: brightness(1.1); }
+.footer-map .map-fallback a { color: rgba(255,255,255,0.8); }
+.map-container .map-fallback a { color: var(--color-accent); }

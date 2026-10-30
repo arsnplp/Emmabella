@@ -470,7 +470,7 @@ ${relatedHtml}
     }
   </script>
 
-  <script src="../assets/cookies.js?v=20261030" defer></script>
+  <script src="../assets/cookies.js?v=20261030b" defer></script>
 </body>
 </html>
 `;
